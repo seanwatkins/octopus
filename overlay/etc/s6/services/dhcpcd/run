@@ -1,0 +1,8 @@
+#!/bin/sh
+# s6 run script for dhcpcd
+
+set -a
+. /etc/octopus.env
+set +a
+
+exec dhcpcd -B -f /etc/dhcpcd.conf "${NETWORK_INTERFACE:-eth0}"

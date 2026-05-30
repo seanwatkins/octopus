@@ -1,0 +1,3 @@
+#!/bin/sh
+# s6 run script for sshd
+exec /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config

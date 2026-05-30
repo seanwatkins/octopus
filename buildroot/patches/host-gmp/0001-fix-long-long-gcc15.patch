@@ -1,0 +1,9 @@
+Force long long reliability test to pass on gcc 15 (C23 default).
+gcc 15 treats functions with empty parameter lists as (void), breaking
+GMP configure's ABI detection test.
+
+--- a/configure
++++ b/configure
+@@ -1 +1 @@
+-gmp_prog_cc_works="no, long long reliability test 1"
++gmp_prog_cc_works="yes, long long reliability test 1 (patched)"

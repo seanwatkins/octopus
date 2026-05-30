@@ -1,0 +1,8 @@
+#!/bin/sh
+# s6 finish script — called when the service exits.
+# $1 = exit code, $2 = signal number (-1 if normal exit)
+# Logs the crash and lets s6 restart the service.
+
+svcname=$(basename $(dirname $0))
+echo "[$(date -Iseconds)] $svcname exited: code=$1 signal=$2" \
+    >> /var/log/octopus/crashes.log

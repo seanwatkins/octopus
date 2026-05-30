@@ -1,0 +1,8 @@
+config BR2_PACKAGE_SBCL_MCP
+	bool "sbcl-mcp"
+	depends on BR2_x86_64
+	help
+	  Pre-compiled SBCL executable core containing the MCP server
+	  and all Quicklisp dependencies. Produced by build-sbcl-core.sh
+	  on the build host, then installed into the image as a single
+	  self-contained binary at /usr/local/bin/mcp-server.

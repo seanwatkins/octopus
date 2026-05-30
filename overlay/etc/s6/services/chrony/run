@@ -1,0 +1,15 @@
+#!/bin/sh
+# s6 run script for chrony (NTP)
+set -a
+. /etc/octopus.env
+set +a
+
+cat > /tmp/chrony.conf <<EOF
+$(for s in ${NTP_SERVERS:-pool.ntp.org}; do echo "server $s iburst"; done)
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/octopus
+EOF
+
+exec chronyd -n -f /tmp/chrony.conf

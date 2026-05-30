@@ -1,0 +1,6 @@
+#!/bin/sh
+# s6 run script for kernel watchdog
+# Kicks /dev/watchdog every 10s. If this process dies the kernel
+# will reboot the machine after the watchdog timeout (usually 60s).
+
+exec busybox watchdog -t 10 /dev/watchdog

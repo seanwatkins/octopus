@@ -1,0 +1,83 @@
+#
+# octopus_defconfig
+# Buildroot config for the Octopus appliance
+# x86_64, musl libc, s6 init, minimal service stack
+#
+
+# Architecture
+BR2_x86_64=y
+BR2_x86_corei7=y
+BR2_TOOLCHAIN_BUILDROOT_MUSL=y
+BR2_TARGET_OPTIMIZATION="-Os -pipe"
+
+# System
+BR2_TARGET_GENERIC_HOSTNAME="octopus"
+BR2_TARGET_GENERIC_ISSUE="Octopus Appliance"
+BR2_TARGET_GENERIC_ROOT_PASSWD=""
+BR2_SYSTEM_DHCP="eth0"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+
+# Init — point kernel at our init script
+BR2_TARGET_GENERIC_REMOUNT_ROOTFS_RW=y
+BR2_INIT_NONE=y
+BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_OCTOPUS_PATH)/../scripts/post-build.sh"
+
+# s6 supervision suite
+BR2_PACKAGE_S6=y
+BR2_PACKAGE_S6_RC=y
+BR2_PACKAGE_EXECLINE=y
+BR2_PACKAGE_SKALIBS=y
+
+# Core utilities
+BR2_PACKAGE_BUSYBOX=y
+
+# Filesystem overlay (our services, configs, init script)
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_OCTOPUS_PATH)/../overlay"
+
+# SSH
+BR2_PACKAGE_OPENSSH=y
+BR2_PACKAGE_OPENSSH_SERVER=y
+BR2_PACKAGE_OPENSSH_CLIENT=y
+
+# Time sync
+BR2_PACKAGE_CHRONY=y
+
+# DNS resolver
+BR2_PACKAGE_UNBOUND=y
+
+# Network tools
+BR2_PACKAGE_IPROUTE2=y
+BR2_PACKAGE_DHCPCD=y
+
+# TLS
+BR2_PACKAGE_OPENSSL=y
+BR2_PACKAGE_CA_CERTIFICATES=y
+
+# Custom package: SBCL MCP server core
+BR2_PACKAGE_SBCL_MCP=y
+
+# Kernel
+BR2_LINUX_KERNEL=y
+BR2_LINUX_KERNEL_LATEST_VERSION=y
+BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_OCTOPUS_PATH)/configs/linux.config"
+BR2_LINUX_KERNEL_INSTALL_TARGET=y
+
+# Bootloader
+BR2_TARGET_GRUB2=y
+BR2_TARGET_GRUB2_X86_64_EFI=y
+BR2_TARGET_GRUB2_BUILTIN_MODULES_PC="boot linux ext2 fat squash4 part_msdos part_gpt normal biosdisk"
+
+# Image formats
+BR2_TARGET_ROOTFS_EXT2=y
+BR2_TARGET_ROOTFS_EXT2_4=y
+BR2_TARGET_ROOTFS_EXT2_SIZE="256M"
+BR2_TARGET_ROOTFS_ISO9660=y
+BR2_TARGET_ROOTFS_ISO9660_HYBRID=y
+
+# Strip binaries to save space
+BR2_STRIP_strip=y
+
+# Compiler cache speeds up rebuilds
+BR2_CCACHE=y

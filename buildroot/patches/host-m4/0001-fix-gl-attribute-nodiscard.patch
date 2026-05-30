@@ -1,0 +1,11 @@
+Fix GL_OSET_INLINE _GL_ATTRIBUTE_NODISCARD conflict with gcc 12+
+causing "expected identifier or '(' before 'int'" error.
+
+--- a/lib/gl_oset.h
++++ b/lib/gl_oset.h
+@@ -272,7 +272,7 @@
+ #  if defined __GNUC__ && !defined __clang__
+ /* Work around <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109505>.  */
+-GL_OSET_INLINE _GL_ATTRIBUTE_NODISCARD int
++GL_OSET_INLINE int
+   gl_oset_nx_add (gl_oset_t set, const void *elt)

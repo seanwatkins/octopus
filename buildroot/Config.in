@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_OCTOPUS_PATH/package/sbcl-mcp/Config.in"

@@ -1,0 +1,13 @@
+#!/bin/sh
+# s6 run script for cloudflared tunnel
+
+set -a
+. /etc/octopus.env
+set +a
+
+# Wait for network before starting tunnel
+until ip route | grep -q default; do
+    sleep 1
+done
+
+exec cloudflared tunnel --no-autoupdate run --token "${TUNNEL_TOKEN}"

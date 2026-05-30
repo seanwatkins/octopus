@@ -1,0 +1,14 @@
+Fix missing #include <cstdint> in cmcppdap/network.h causing
+'uint32_t' has not been declared error on gcc 11+.
+
+Known upstream issue in cmake 3.28.1, fixed in 3.29.x.
+--- a/Utilities/cmcppdap/include/dap/network.h
++++ b/Utilities/cmcppdap/include/dap/network.h
+@@ -28,6 +28,7 @@
+ #ifndef dap_network_h
+ #define dap_network_h
+ 
++#include <cstdint>
+ #include <functional>
+ #include <memory>
+ #include <string>

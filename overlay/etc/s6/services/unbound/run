@@ -1,0 +1,4 @@
+#!/bin/sh
+# s6 run script for unbound (local DNS resolver)
+
+exec unbound -d -c /etc/unbound/unbound.conf
