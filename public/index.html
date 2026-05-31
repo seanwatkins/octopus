@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +173,7 @@
     <a href="#concept">Concept</a>
     <a href="#boot-arch">Boot</a>
     <a href="#lisp-power">Why Lisp</a>
+    <a href="#safety">Safety</a>
     <a href="#gpu-av">GPU/AV</a>
     <a href="#arm-hub">Arm Hub</a>
     <button class="toggle-btn" id="themeToggle">light mode</button>
@@ -293,13 +295,15 @@
     <h3>Code is data, and data is code</h3>
     <p>
       Lisp represents code as native data structures. This enables programmatic function generation, runtime
-      transformation of behaviour, and direct manipulation of tool definitions.
+      transformation of behaviour, and direct manipulation of tool definitions. Tools in Octopus are not static
+      declarations — they are live functions in a running image that can be created, replaced, or extended at runtime.
     </p>
 
     <h3>The image model: everything is live</h3>
     <p>
       A Lisp image is a snapshot of the entire running system: code, data, state, and all. You can mutate the system,
-      snapshot it, and restart from that image later with all definitions intact.
+      snapshot it, and restart from that image later with all definitions intact. This allows Octopus to evolve while
+      running and persist those changes across reboots, something no other mainstream language runtime supports cleanly.
     </p>
 
     <h3>The macro system: build new languages on the fly</h3>
@@ -352,6 +356,62 @@
     </p>
   </div>
 
+  <!-- NEW SECTION: WHY THIS IS SAFE -->
+  <div class="section" id="safety">
+    <h2>Why this isn’t the “bad” kind of self‑modifying code</h2>
+
+    <p>
+      Historically, “self‑modifying code” meant programs scribbling bytes into their own text segment — a dangerous,
+      opaque, and unmaintainable practice associated with early assembly, malware, and systems without memory
+      protection. Octopus does <strong>none</strong> of that. Instead, it uses the structured, intentional,
+      language‑level redefinition mechanisms that Lisp was designed around. In Lisp, redefining a function, macro, or
+      class at runtime is not a hack; it is a first‑class operation supported by the compiler, the runtime, the object
+      system, and the debugger. The system remains type‑checked, introspectable, and fully observable throughout.
+    </p>
+
+    <h3>Why this is safe in Lisp</h3>
+
+    <p>
+      Lisp’s runtime is built around the idea that code is data and data is code. Functions are objects. Classes are
+      objects. Generic functions, methods, macros, and even the compiler itself are objects. Redefinition is not a
+      mutation of raw memory — it is a controlled update of objects in a well‑defined environment. The runtime updates
+      function cells, method dispatch tables, macro expanders, and class metaobjects in a consistent, atomic way.
+    </p>
+
+    <p>
+      Because the system is fully introspectable, Octopus can:
+    </p>
+
+    <ul>
+      <li>inspect existing definitions before replacing them</li>
+      <li>validate new definitions</li>
+      <li>wrap or sandbox tool functions</li>
+      <li>log and audit changes</li>
+      <li>snapshot the entire image for rollback</li>
+    </ul>
+
+    <p>
+      This is fundamentally different from traditional self‑modifying code. Nothing is being patched at the byte level.
+      Nothing is being rewritten in executable memory. The system is simply replacing objects with new objects — the
+      same way a REPL‑driven development workflow has worked safely for decades.
+    </p>
+
+    <h3>Why this works for an AI‑driven system</h3>
+
+    <p>
+      Because Lisp supports safe, structured redefinition, the AI can extend the system without destabilizing it. New
+      tools are just functions added to a registry. Redefinitions are just updates to function objects. Snapshots
+      preserve the entire state of the system, allowing Octopus to evolve while retaining the ability to roll back or
+      clone itself. This makes Octopus a uniquely safe environment for runtime evolution — something that would be
+      reckless or impossible in most other languages.
+    </p>
+
+    <p>
+      In short: Octopus isn’t doing the dangerous kind of self‑modifying code. It’s using the safe, intentional,
+      language‑level evolution model that Lisp was built for.
+    </p>
+  </div>
+
   <div class="section" id="gpu-av">
     <h2>GPU, Audio, and Video Capabilities</h2>
     <p>
@@ -390,6 +450,12 @@
 │ 3. POST /arms → Hub    │      │ 6. Node loads arm.lisp │
 │                        │      │    into live image     │
 └───────────────────────┘      └───────────────────────┘</code></pre>
+
+    <p>
+      Over time, the Arm Hub becomes a shared library of evolved capabilities: GPU kernels tuned for specific models,
+      audio pipelines for different environments, protocol adapters, monitoring tools, and more. Because everything is
+      expressed as Lisp code plus a small JSON descriptor, arms are easy to inspect, version, diff, and audit.
+    </p>
   </div>
 
 </div>
@@ -412,3 +478,4 @@
 
 </body>
 </html>
+

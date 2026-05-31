@@ -1,0 +1,40 @@
+#!/bin/sh
+
+#  -enable-kvm \
+    #    -cdrom  /octoboot/octopus.iso \
+
+#    -nographic \
+
+
+qemu-system-x86_64 \
+    -kernel /octoboot/bzImage \
+    -initrd /octoboot/initrd \
+    -m 512 \
+    -vnc :1 \
+    -machine q35 \
+    -d guest_errors \
+    -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE_4M.fd \
+    -drive if=pflash,format=raw,file=/usr/share/OVMF/OVMF_VARS_4M.fd
+
+
+
+    #-append "console=ttyS0" 
+
+#    -vnc :1  
+
+#\-nographic
+#    -append "console=ttyS0" \
+    #    -kernel /octoboot/bzImage \
+ #   -initrd /octoboot/initrd \
+
+exit
+
+
+qemu-system-x86_64 \
+    -cdrom ../prebuilt/octopus.iso \
+    -boot d \
+    -m 512 \
+    -nographic
+
+
+
