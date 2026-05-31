@@ -26,9 +26,7 @@
       --code-bg: #e5e7eb;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -75,9 +73,7 @@
       text-decoration: none;
     }
 
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
 
     .container {
       max-width: 960px;
@@ -85,14 +81,18 @@
       padding: 24px;
     }
 
-    .tag {
-      display: inline-block;
-      padding: 4px 10px;
+    .repo-links {
+      padding: 10px 14px;
       border-radius: 6px;
       background: var(--border);
       color: var(--accent);
-      font-size: 0.8rem;
-      margin-bottom: 12px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .repo-links a {
+      color: var(--accent);
+      margin-right: 14px;
     }
 
     ul {
@@ -116,13 +116,9 @@
       white-space: pre;
     }
 
-    code {
-      font-family: inherit;
-    }
+    code { font-family: inherit; }
 
-    .section {
-      margin-top: 40px;
-    }
+    .section { margin-top: 40px; }
 
     footer {
       margin-top: 60px;
@@ -160,9 +156,7 @@
       color: var(--muted);
     }
 
-    .nav-links a:hover {
-      color: var(--accent);
-    }
+    .nav-links a:hover { color: var(--accent); }
   </style>
 </head>
 
@@ -178,6 +172,7 @@
     <a href="#concept">Concept</a>
     <a href="#boot-arch">Boot</a>
     <a href="#lisp-power">Why Lisp</a>
+    <a href="#gpu-av">GPU/AV</a>
     <a href="#arm-hub">Arm Hub</a>
     <button class="toggle-btn" id="themeToggle">light mode</button>
   </div>
@@ -185,7 +180,12 @@
 
 <div class="container">
 
-  <div class="tag">developer preview</div>
+  <!-- REPO LINKS (Option E) -->
+  <div class="repo-links">
+    <strong>Repositories:</strong>
+    <a href="https://github.com/seanwatkins/mcp_server">mcp_server</a>
+    <a href="https://github.com/seanwatkins/octopus">octopus</a>
+  </div>
 
   <h2 id="concept">What Octopus is</h2>
   <p class="hero-sub">
@@ -197,28 +197,20 @@
 
   <div class="section">
     <h2>Concept: MCP as a live Lisp image</h2>
-    <p>
-      Most MCP servers are static:
-    </p>
+    <p>Most MCP servers are static:</p>
     <ul>
       <li>Tools are defined at write time.</li>
       <li>Server is compiled/deployed.</li>
       <li>Behaviour is effectively frozen until the next deploy.</li>
     </ul>
 
-    <p>
-      Octopus flips that model:
-    </p>
+    <p>Octopus flips that model:</p>
     <ul>
       <li><strong>Live image</strong> — the MCP server is a running Lisp image.</li>
       <li><strong>Mutable tool registry</strong> — tools are entries in a hash table, not a fixed list.</li>
       <li><strong>Runtime extension</strong> — the AI can define new tools or redefine existing ones.</li>
       <li><strong>Persistence</strong> — the image can be snapshotted so changes survive reboots.</li>
     </ul>
-
-    <p>
-      The result is a system that behaves less like a static API server and more like a living organism with many arms.
-    </p>
   </div>
 
   <div class="section">
@@ -235,18 +227,10 @@
   (lambda (svc)
     (shell "systemctl restart ~a" svc))
   :persist? t)</code></pre>
-    <p>
-      From the AI’s perspective, this is just another tool call. Under the hood, it’s modifying the live MCP server
-      itself and optionally writing that change back into the image.
-    </p>
   </div>
 
   <div class="section" id="boot-arch">
     <h2>Boot and process architecture</h2>
-    <p>
-      Octopus is designed as a small Linux appliance. The boot flow is intentionally simple and explicit:
-    </p>
-
     <pre><code> ┌──────────────────────────────────────────────────────────────┐
  │                        System Power‑On                       │
  └──────────────────────────────────────────────────────────────┘
@@ -308,29 +292,72 @@
 
     <h3>Code is data, and data is code</h3>
     <p>
-      In Lisp, code is just data structures (lists, symbols, etc.). That means you can construct functions
-      programmatically, transform behaviour at runtime, and store tool definitions as first‑class values.
+      Lisp represents code as native data structures. This enables programmatic function generation, runtime
+      transformation of behaviour, and direct manipulation of tool definitions.
     </p>
 
     <h3>The image model: everything is live</h3>
     <p>
       A Lisp image is a snapshot of the entire running system: code, data, state, and all. You can mutate the system,
-      snapshot it, and restart from that image later with all definitions intact. For Octopus, this means the MCP
-      server can evolve while it’s running and keep those changes across reboots.
+      snapshot it, and restart from that image later with all definitions intact.
     </p>
 
-    <h3>Performance close to C/C++</h3>
+    <h3>The macro system: build new languages on the fly</h3>
     <p>
-      SBCL compiles to native code. With type declarations and careful design in hot paths, performance is often
-      within striking distance of C/C++ for typical MCP workloads (parsing, dispatch, in‑memory registries), while
-      still allowing runtime redefinition and interactive development.
+      Macros allow Lisp to extend itself. Octopus can define domain‑specific languages for tools, schemas, protocols,
+      GPU kernels, or audio/video pipelines. These DSLs can be generated at runtime, enabling the AI to create new
+      abstractions that become first‑class citizens in the system.
     </p>
 
-    <h3>Full Linux and GPU/AV integration</h3>
+    <h3>Native performance close to C/C++</h3>
     <p>
-      SBCL is a normal Linux process: it can open sockets, files, devices, and call any C library via FFI. That
-      includes CUDA/OpenCL/Vulkan for GPU work, FFmpeg/GStreamer for audio/video, ALSA/PulseAudio/JACK/PipeWire for
-      audio, and VAAPI/NVENC/V4L2 for hardware‑accelerated video. Any of these can be wrapped as MCP tools.
+      SBCL compiles to native code. With type declarations and careful design in hot paths, performance is often within
+      striking distance of C/C++. This means Octopus can handle protocol parsing, GPU dispatch, audio/video streaming,
+      and other systems‑level tasks without sacrificing runtime flexibility.
+    </p>
+
+    <h3>Full Linux, GPU, and multimedia access</h3>
+    <p>
+      SBCL is a native Linux process with full access to system calls and C libraries. This includes CUDA, OpenCL,
+      Vulkan, FFmpeg, GStreamer, ALSA, PulseAudio, JACK, PipeWire, VAAPI, NVENC, and more. Any of these can be wrapped
+      as MCP tools and extended at runtime.
+    </p>
+
+    <h3>Why other languages can’t do this</h3>
+    <p>
+      Most languages force a trade‑off:
+    </p>
+    <ul>
+      <li>Python/Node: dynamic but slow, unsafe, and not persistent.</li>
+      <li>Go/Rust: fast but static — no runtime mutation.</li>
+      <li>Java: hot‑swap exists but is brittle and limited.</li>
+    </ul>
+    <p>
+      Lisp is the only environment that combines:
+    </p>
+    <ul>
+      <li>Runtime redefinition</li>
+      <li>Persistent images</li>
+      <li>Macro‑driven language extension</li>
+      <li>Native performance</li>
+      <li>Full OS and hardware access</li>
+    </ul>
+
+    <h3>Why Lisp makes Octopus possible</h3>
+    <p>
+      Octopus is not just a server — it is a live, evolving system. The AI can define new tools, patch behaviour,
+      create new protocols, or extend the system in ways that persist across restarts. This is only possible because
+      Lisp treats the running system as a living organism rather than a static binary. Octopus is effectively a modern
+      Lisp Machine — embedded, networked, and AI‑driven.
+    </p>
+  </div>
+
+  <div class="section" id="gpu-av">
+    <h2>GPU, Audio, and Video Capabilities</h2>
+    <p>
+      SBCL can interact with GPU compute, audio pipelines, and video systems the same way a C program can. This allows
+      Octopus to expose GPU kernels, audio processing chains, or video transcoding pipelines as MCP tools that can be
+      extended at runtime.
     </p>
   </div>
 
@@ -341,50 +368,6 @@
       Lisp image. The <strong>Arm Hub</strong> is a central registry where nodes can publish these arms so other
       nodes can discover and import them.
     </p>
-
-    <h3>What an arm is</h3>
-    <ul>
-      <li><strong>Code</strong> — Lisp function(s), macros, and support definitions.</li>
-      <li><strong>Schema</strong> — MCP tool schema (name, parameters, return types).</li>
-      <li><strong>Metadata</strong> — version, author, dependencies, capabilities, tags.</li>
-      <li><strong>Policy hints</strong> — required privileges, resource usage, trust level.</li>
-    </ul>
-
-    <h3>Arm Hub responsibilities</h3>
-    <ul>
-      <li><strong>Indexing</strong> — searchable catalog of arms.</li>
-      <li><strong>Versioning</strong> — semantic versions and compatibility metadata.</li>
-      <li><strong>Validation</strong> — static checks, tests, and policy enforcement.</li>
-      <li><strong>Distribution</strong> — endpoints for nodes to pull arms.</li>
-    </ul>
-
-    <h3>Publish and pull protocol (conceptual)</h3>
-    <p>Arms are represented as a small bundle:</p>
-    <ul>
-      <li><code>arm.json</code> — metadata, schema, capabilities, signature.</li>
-      <li><code>arm.lisp</code> — the actual Lisp code to load.</li>
-    </ul>
-
-    <p><strong>Publish (node → hub)</strong></p>
-    <pre><code>POST /arms
-  arm.json
-  arm.lisp</code></pre>
-
-    <p>Hub validates, indexes, and returns an ID like <code>restart-service@0.1.0</code>.</p>
-
-    <p><strong>Pull (node → hub)</strong></p>
-    <pre><code>GET /arms
-GET /arms/{name}
-GET /arms/{name}/{version}</code></pre>
-
-    <p>Node fetches metadata, applies local policy, then loads <code>arm.lisp</code> into its live image.</p>
-
-    <h3>Security model</h3>
-    <ul>
-      <li><strong>Trust levels</strong> — internal, trusted, untrusted.</li>
-      <li><strong>Capability flags</strong> — network, filesystem, gpu, audio, video, process, root_required.</li>
-      <li><strong>Validation</strong> — static analysis, sandboxed load, signature verification.</li>
-    </ul>
 
     <h3>Multi‑node evolution</h3>
     <pre><code>          ┌───────────────────────────────┐
@@ -400,33 +383,13 @@ GET /arms/{name}/{version}</code></pre>
 │  (Live Lisp Image)     │      │  (Live Lisp Image)     │
 │                        │      │                        │
 │ 1. AI defines new arm  │      │ 4. Node queries hub    │
-│    (tool/protocol)     │      │    for arms            │
 │                        │      │                        │
 │ 2. Node serializes     │      │ 5. Node pulls arm.json │
 │    arm.json + arm.lisp │      │    + arm.lisp          │
 │                        │      │                        │
- 3. POST /arms → Hub    │      │ 6. Node loads arm.lisp │
+│ 3. POST /arms → Hub    │      │ 6. Node loads arm.lisp │
 │                        │      │    into live image     │
 └───────────────────────┘      └───────────────────────┘</code></pre>
-
-    <h3>Git‑style workflow (conceptual CLI)</h3>
-    <pre><code>;; on Node A
-(export-arm "restart-service"
-            :version "0.1.0"
-            :capabilities '(:network :process)
-            :description "Restart a systemd service.")
-
-# publish
-octopus-arm push ./arms/restart-service
-
-# on Node B
-octopus-arm search restart
-octopus-arm pull restart-service@0.1.0</code></pre>
-
-    <p>
-      This turns Octopus into a distributed, self‑evolving fabric: each node can grow new arms and share them with
-      the network under explicit policy and trust controls.
-    </p>
   </div>
 
 </div>
