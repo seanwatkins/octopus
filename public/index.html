@@ -1,11 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Octopus — A Lisp‑Native MCP Server</title>
+  <title>Octopus — A Lisp‑Native MCP Server Appliance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     :root {
       --bg: #0b0d11;
@@ -16,7 +14,6 @@
       --accent-soft: #7c4dff;
       --code-bg: #111418;
     }
-
     [data-theme="light"] {
       --bg: #f8fafc;
       --fg: #0b0d11;
@@ -26,18 +23,15 @@
       --accent-soft: #6366f1;
       --code-bg: #e5e7eb;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       background: var(--bg);
       color: var(--fg);
-      line-height: 1.55;
+      line-height: 1.6;
       transition: background 0.25s, color 0.25s;
     }
-
     header {
       padding: 20px 24px;
       border-bottom: 1px solid var(--border);
@@ -45,119 +39,75 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    h1, h2, h3 {
-      margin: 0;
-      color: var(--fg);
-      font-weight: 600;
-    }
-
-    h2 {
-      margin-top: 32px;
-      margin-bottom: 8px;
-      font-size: 1.3rem;
-    }
-
-    h3 {
-      margin-top: 20px;
-      margin-bottom: 6px;
-      font-size: 1.05rem;
-    }
-
-    p {
-      margin: 8px 0 12px;
-      color: var(--fg);
-    }
-
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
+    h1, h2, h3 { margin: 0; color: var(--fg); font-weight: 600; }
+    h2 { margin-top: 36px; margin-bottom: 10px; font-size: 1.3rem; }
+    h3 { margin-top: 22px; margin-bottom: 6px; font-size: 1.05rem; }
+    p { margin: 8px 0 12px; }
+    a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 24px;
+    .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+    .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+    .badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+      border: 1px solid var(--accent); color: var(--accent);
     }
-
-    .repo-links {
-      padding: 10px 14px;
-      border-radius: 6px;
-      background: var(--border);
-      color: var(--accent);
-      font-size: 0.85rem;
-      margin-bottom: 20px;
-    }
-
-    .repo-links a {
-      color: var(--accent);
-      margin-right: 14px;
-    }
-
-    ul {
-      padding-left: 20px;
-      margin: 8px 0 12px;
-    }
-
-    li {
-      margin-bottom: 4px;
-      color: var(--fg);
-    }
-
+    ul { padding-left: 20px; margin: 8px 0 12px; }
+    li { margin-bottom: 5px; }
     pre {
-      background: var(--code-bg);
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      font-size: 0.9rem;
-      color: var(--fg);
-      white-space: pre;
+      background: var(--code-bg); padding: 16px; border-radius: 8px;
+      overflow-x: auto; border: 1px solid var(--border);
+      font-size: 0.88rem; white-space: pre;
     }
-
-    code { font-family: inherit; }
-
-    .section { margin-top: 40px; }
-
+    .section { margin-top: 44px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+    .card { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .card h3 { margin-top: 0; color: var(--accent); }
+    .stack-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem;
+    }
+    .stack-row:last-child { border-bottom: none; }
+    .stack-label { min-width: 160px; color: var(--accent); font-weight: 600; }
     footer {
-      margin-top: 60px;
-      padding: 20px 24px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.8rem;
-      text-align: center;
+      margin-top: 60px; padding: 20px 24px;
+      border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; text-align: center;
     }
-
     .toggle-btn {
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--fg);
-      font-size: 0.8rem;
+      cursor: pointer; padding: 6px 12px; border-radius: 6px;
+      border: 1px solid var(--border); background: transparent; color: var(--fg); font-size: 0.8rem;
     }
-
-    .toggle-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .hero-sub {
-      color: var(--muted);
-      max-width: 40rem;
-      font-size: 0.95rem;
-    }
-
-    .nav-links a {
-      margin-left: 12px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
+    .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .hero-sub { color: var(--muted); max-width: 42rem; font-size: 0.95rem; margin-top: 6px; }
+    .nav-links a { margin-left: 12px; font-size: 0.8rem; color: var(--muted); }
     .nav-links a:hover { color: var(--accent); }
+    .muted { color: var(--muted); }
+    .status-built {
+      display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+      background: #052e16; color: #4ade80; border: 1px solid #166534;
+    }
+    .provocation {
+      border-left: 3px solid var(--accent); padding: 16px 20px; margin: 20px 0;
+      background: var(--code-bg); border-radius: 0 8px 8px 0; font-style: italic;
+    }
+    .counterpoint {
+      border-left: 3px solid #f59e0b; padding: 16px 20px; margin: 20px 0;
+      background: var(--code-bg); border-radius: 0 8px 8px 0;
+    }
+    .counterpoint-label {
+      font-size: 0.75rem; font-weight: 700; color: #f59e0b;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+    }
+    .cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    @media (max-width: 640px) { .cost-grid { grid-template-columns: 1fr; } }
+    .cost-card { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .cost-card .cost-label {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 10px; color: #f87171;
+    }
+    .cost-card.future .cost-label { color: var(--accent); }
+    .cost-card ul { margin: 6px 0 0; padding-left: 16px; }
+    .cost-card li { font-size: 0.88rem; color: var(--muted); margin-bottom: 3px; }
   </style>
 </head>
 
@@ -166,316 +116,504 @@
 <header>
   <div>
     <h1>🐙 Octopus</h1>
-    <div class="hero-sub">A Lisp‑native, self‑evolving MCP server appliance.</div>
+    <div class="hero-sub">Lisp code, running on bare metal, dynamically updated by AI at runtime.</div>
   </div>
-
   <div class="nav-links">
-    <a href="#concept">Concept</a>
-    <a href="#boot-arch">Boot</a>
-    <a href="#lisp-power">Why Lisp</a>
-    <a href="#safety">Safety</a>
-    <a href="#gpu-av">GPU/AV</a>
-    <a href="#arm-hub">Arm Hub</a>
+    <a href="#what">What it is</a>
+    <a href="#rethink">Rethink Security</a>
+    <a href="#boot">Boot</a>
+    <a href="#services">Services</a>
+    <a href="#mcp">MCP Server</a>
+    <a href="#lisp">Why Lisp</a>
+    <a href="#ops">Rethink Ops</a>
+    <a href="#build">Build</a>
     <button class="toggle-btn" id="themeToggle">light mode</button>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- REPO LINKS (Option E) -->
-  <div class="repo-links">
-    <strong>Repositories:</strong>
-    <a href="https://github.com/seanwatkins/mcp_server">mcp_server</a>
-    <a href="https://github.com/seanwatkins/octopus">octopus</a>
+  <div class="badge-row">
+    <span class="badge">Linux 6.11.11</span>
+    <span class="badge">musl libc</span>
+    <span class="badge">SBCL 2.6</span>
+    <span class="badge">s6 supervision</span>
+    <span class="badge">Buildroot 2024.11</span>
+    <span class="badge">~50MB ISO</span>
+    <span class="status-built">✓ Built</span>
   </div>
 
-  <h2 id="concept">What Octopus is</h2>
-  <p class="hero-sub">
-    Octopus is a small Linux appliance that runs foundational services and exposes them through an MCP server
-    written in Common Lisp. The MCP server <strong>is</strong> a live Lisp image. Tools are not static definitions
-    baked in at deploy time — they are functions in a running image that the AI can extend, patch, or replace,
-    and those changes can persist across restarts.
-  </p>
+  <!-- WHAT IT IS -->
+  <div class="section" id="what">
+    <h2>What Octopus is</h2>
 
+    <p>
+      Octopus is a machine that boots directly into a <strong>live Common Lisp image</strong>. The image
+      is the application. Claude connects to it over MCP and can read it, call it, extend it, and rewrite
+      it — in real time, while it's running, without a redeploy.
+    </p>
+
+    <p>
+      Here is what that looks like in practice. Claude sends this to the running server:
+    </p>
+
+    <pre><code>;; Claude defines a new tool on the live server:
+(define-tool query-influx
+  "Run a Flux query against the local InfluxDB and return results as JSON."
+  (jobj "type" "object"
+        "properties" (jobj "query" (jobj "type" "string"
+                                         "description" "Flux query string")))
+  (influx-query (gethash "query" args)))
+
+;; The tool now exists. Claude can call it immediately.
+;; It is written to tools.lisp and will be there after every reboot.</code></pre>
+
+    <p>
+      That function is now part of the running server. Not queued for the next deploy. Not waiting for a
+      container rebuild. Not sitting in a pull request. It exists now, in the image, and it will exist after
+      every future restart because it was written to <code>tools.lisp</code> at the moment of definition.
+    </p>
+
+    <p>
+      This is the core idea: <strong>the server is not a static binary that gets replaced — it is a living
+      Lisp image that grows.</strong> Claude is the author, the deployer, and the operator, all in the same
+      conversation.
+    </p>
+
+    <p>
+      The underlying OS is a minimal Linux appliance (~50MB) built with Buildroot. It boots in seconds, runs
+      eight supervised services via s6, and exposes the MCP server through a Cloudflare Tunnel — no open
+      inbound ports, no static IP required. The entire infrastructure exists to get out of the way and let
+      the Lisp image run.
+    </p>
+  </div>
+
+  <!-- RETHINK SECURITY — moved here, right after What it is -->
+  <div class="section" id="rethink">
+    <h2>Maybe it's time to rethink the sandbox</h2>
+
+    <div class="provocation">
+      "If the AI can write the code, can't it also handle security?"
+    </div>
+
+    <p>
+      A friend who graduated with a computer science degree in the early 90s recently smiled when he saw
+      Octopus modifying its own code at runtime. He remembered when self-modifying code was the boogeyman
+      of software engineering — the thing you were told never to do. And yet here it is, working cleanly,
+      supervised by an AI that understands what it's changing and why.
+    </p>
+    <p>
+      That smile contains a real question worth sitting with: <strong>was the sandbox model always the
+      right answer, or was it the best answer available at the time?</strong>
+    </p>
+
+    <h3>Why the sandbox model exists</h3>
+    <p>
+      The security model that dominates software today — sandboxes, least privilege, capability restrictions,
+      static analysis, input validation, memory isolation — was built around one core assumption: <em>code is
+      written by humans, executed by machines, and the machine cannot be trusted to know the difference between
+      intended and malicious behaviour.</em>
+    </p>
+    <p>
+      So we built walls. Processes can't touch each other's memory. Syscalls are filtered. Network access is
+      restricted. Everything is sandboxed because the runtime has no judgement — it will execute whatever it's
+      given. The sandbox is the substitute for judgement.
+    </p>
+
+    <h3>The assumption is changing</h3>
+    <p>
+      When Claude evaluates Lisp code in the Octopus image, it isn't blindly executing a string. It composed
+      that string. It knows what it's trying to accomplish. It can reason about whether the operation makes
+      sense, whether it's consistent with prior context. This is qualitatively different from a runtime that
+      executes whatever arrives on stdin.
+    </p>
+    <p>
+      The traditional sandbox assumes a dumb executor. An AI-driven system isn't dumb. It has the one thing
+      the sandbox was built to compensate for: <strong>judgement</strong>.
+    </p>
+
+    <h3>What a different model might look like</h3>
+    <ul>
+      <li><strong>Intent verification</strong> — the agent declares what it's trying to accomplish before acting.</li>
+      <li><strong>Behavioural auditing</strong> — every action is logged with the reasoning that produced it.</li>
+      <li><strong>Reversibility over prevention</strong> — snapshots and rollback instead of blocked operations.</li>
+      <li><strong>Earned trust tiers</strong> — broader access as the agent demonstrates reliable behaviour over time.</li>
+    </ul>
+
+    <div class="counterpoint">
+      <div class="counterpoint-label">The counterargument</div>
+      <p>
+        <strong>We are not there yet.</strong> Current AI systems hallucinate, make mistakes, and can be
+        manipulated through prompt injection. The sandbox contains well-intentioned mistakes as much as
+        malicious ones — and AI systems make plenty of those.
+      </p>
+      <p>
+        Octopus is an experiment on a machine its owner controls, used by a single trusted user. Giving an
+        AI unrestricted eval access to a production system handling sensitive data for thousands of users is
+        a different proposition entirely. We need to earn that trust incrementally, not assume it.
+      </p>
+    </div>
+
+    <h3>The deeper shift</h3>
+    <p>
+      Security has always been about managing the gap between what a system is supposed to do and what it
+      might be made to do. As AI agents become more capable and more auditable, that gap narrows — not because
+      AI is infallible, but because an agent that understands intent can participate in its own security model
+      rather than simply being constrained by walls imposed from outside.
+    </p>
+    <p>
+      Your friend's smile was recognition of something real: the old rules were written for a world where code
+      had no author in the room at runtime. That world is changing. What the new rules look like is still an
+      open question — but it's the right question to be asking.
+    </p>
+  </div>
+
+  <!-- BOOT SEQUENCE -->
+  <div class="section" id="boot">
+    <h2>Boot sequence</h2>
+    <pre><code>BIOS/UEFI
+  └─► GRUB2 (EFI)
+        └─► Linux 6.11.11 kernel
+              └─► initramfs (embedded in bzImage)
+                    └─► /init
+                          └─► /usr/local/bin/octopus-init  (PID 1, stage 1)
+                                │
+                                ├─ mount /proc /sys /dev
+                                ├─ load /etc/octopus.env
+                                ├─ set hostname
+                                ├─ bring up eth0
+                                ├─ write SSH authorized_keys
+                                ├─ mkdir /data/projects
+                                │
+                                └─► exec s6-svscan /etc/s6/services  (PID 1, stage 2)
+                                          │
+                                          ├─ mcp-server
+                                          ├─ cloudflared
+                                          ├─ sshd
+                                          ├─ chrony
+                                          ├─ unbound
+                                          ├─ dhcpcd
+                                          └─ watchdog</code></pre>
+    <p>
+      <code>octopus-init</code> is a small shell script that runs as PID 1. It handles the basics — mounts,
+      env, network — then hands control to <strong>s6-svscan</strong> which supervises all services. If any
+      service dies, s6 restarts it automatically. If s6 itself dies, the kernel panics and the machine reboots
+      (the watchdog ensures it comes back up).
+    </p>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="section" id="services">
+    <h2>The eight arms</h2>
+    <p>Each service runs as a supervised s6 service with a <code>run</code> script and a <code>finish</code> script that logs crashes.</p>
+    <div class="two-col">
+      <div class="card">
+        <h3>mcp-server</h3>
+        <p>The SBCL Common Lisp MCP server. Listens on port 8765. Starts in ~100ms from a pre-compiled executable core.</p>
+        <p class="muted">Restart policy: immediate, unlimited</p>
+      </div>
+      <div class="card">
+        <h3>cloudflared</h3>
+        <p>Cloudflare Tunnel daemon. Opens an outbound HTTPS connection to Cloudflare's edge, exposing port 8765 as a public URL without any inbound firewall rules.</p>
+        <p class="muted">Waits for a default route before starting</p>
+      </div>
+      <div class="card">
+        <h3>sshd</h3>
+        <p>OpenSSH server. Key-only auth (no passwords). Authorized keys written from <code>/etc/octopus.env</code> at boot.</p>
+        <p class="muted">Port 22, ed25519 + rsa host keys</p>
+      </div>
+      <div class="card">
+        <h3>chrony</h3>
+        <p>NTP time sync. Essential for TLS certificate validation, log timestamps, and token expiry.</p>
+        <p class="muted">Replaces ntpd — faster initial sync</p>
+      </div>
+      <div class="card">
+        <h3>unbound</h3>
+        <p>Local caching DNS resolver. All services use it via 127.0.0.1:53. Provides DNSSEC validation.</p>
+        <p class="muted">Listens on 127.0.0.1 only</p>
+      </div>
+      <div class="card">
+        <h3>dhcpcd</h3>
+        <p>DHCP client. Brings up the primary network interface and obtains an IP.</p>
+        <p class="muted">Interface configured via NETWORK_INTERFACE env</p>
+      </div>
+      <div class="card">
+        <h3>watchdog</h3>
+        <p>Kicks the kernel hardware watchdog every 10 seconds. If this process dies, the kernel reboots the machine after ~60 seconds.</p>
+        <p class="muted">/dev/watchdog, busybox watchdog</p>
+      </div>
+      <div class="card">
+        <h3>s6-svscan (PID 1)</h3>
+        <p>Not a service — it <em>is</em> the supervisor. Scans <code>/etc/s6/services</code>, starts each service, restarts on exit.</p>
+        <p class="muted">Replaces systemd/init — ~500KB total</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOUDFLARE -->
   <div class="section">
-    <h2>Concept: MCP as a live Lisp image</h2>
-    <p>Most MCP servers are static:</p>
-    <ul>
-      <li>Tools are defined at write time.</li>
-      <li>Server is compiled/deployed.</li>
-      <li>Behaviour is effectively frozen until the next deploy.</li>
-    </ul>
-
-    <p>Octopus flips that model:</p>
-    <ul>
-      <li><strong>Live image</strong> — the MCP server is a running Lisp image.</li>
-      <li><strong>Mutable tool registry</strong> — tools are entries in a hash table, not a fixed list.</li>
-      <li><strong>Runtime extension</strong> — the AI can define new tools or redefine existing ones.</li>
-      <li><strong>Persistence</strong> — the image can be snapshotted so changes survive reboots.</li>
-    </ul>
+    <h2>How the Cloudflare Tunnel works</h2>
+    <pre><code>Claude.ai ──HTTPS──► Cloudflare edge ──tunnel──► cloudflared on Octopus ──► mcp-server:8765</code></pre>
+    <p>
+      When Octopus boots, <code>cloudflared</code> makes an outbound HTTPS connection to Cloudflare. No inbound
+      ports need to be open. Cloudflare routes all traffic through the persistent outbound connection. From
+      Octopus's perspective it's all outbound traffic on port 443.
+    </p>
+    <p>
+      Setup: create a tunnel at <a href="https://one.dash.cloudflare.com">one.dash.cloudflare.com</a>, copy the
+      token, set it as <code>TUNNEL_TOKEN</code> in <code>/etc/octopus.env</code>, configure the public hostname
+      to point at <code>http://localhost:8765</code>.
+    </p>
   </div>
 
+  <!-- MCP SERVER -->
+  <div class="section" id="mcp">
+    <h2>The MCP server</h2>
+    <p>
+      The MCP server is a <strong>live Common Lisp image</strong> built with SBCL. At build time,
+      <code>sb-ext:save-lisp-and-die</code> compiles the server and all Quicklisp dependencies into a single
+      self-contained executable (~12MB). At boot it starts in ~100ms — no Quicklisp loading, no dependency
+      resolution.
+    </p>
+    <h3>Built-in tools</h3>
+    <ul>
+      <li><code>read_file</code> — read a file from the server's filesystem</li>
+      <li><code>write_file</code> — write a file</li>
+      <li><code>list_directory</code> — list a directory</li>
+      <li><code>exec_command</code> — run a shell command</li>
+      <li><code>eval_lisp</code> — evaluate arbitrary Lisp in the running image</li>
+      <li><code>server_info</code> — uptime, tool count, hostname</li>
+      <li><code>grafana</code> — REST calls to Grafana (persisted tool, auto-loaded)</li>
+    </ul>
+    <h3>Defining a new tool from Claude</h3>
+    <pre><code>;; Claude calls eval_lisp with this form:
+(define-tool my-tool
+  "Does something useful."
+  (jobj "type" "object"
+        "properties" (jobj "arg" (jobj "type" "string")))
+  (format nil "You passed: ~A" (gethash "arg" args)))
+
+;; define-tool registers it in *tool-registry* AND appends it
+;; to tools.lisp so it survives restarts.</code></pre>
+    <h3>Persistence model</h3>
+    <p>
+      User-defined tools are written to <code>tools.lisp</code> on the server. At startup, <code>tools.lisp</code>
+      is loaded automatically, restoring all previously defined tools. The <code>*loading-tools*</code> guard
+      prevents re-appending definitions already in the file.
+    </p>
+    <h3>OAuth 2.0 + PKCE</h3>
+    <p>
+      The server implements OAuth 2.0 with PKCE for Claude.ai integration. All MCP requests are authenticated
+      via bearer token.
+    </p>
+  </div>
+
+  <!-- WHY LISP -->
+  <div class="section" id="lisp">
+    <h2>Why Lisp</h2>
+    <h3>The image model</h3>
+    <p>
+      A Lisp image is a snapshot of the entire running system — code, data, compiled functions, and state.
+      <code>save-lisp-and-die</code> freezes the image at build time so the server starts instantly with
+      everything already compiled. At runtime, new tools can be <code>eval</code>'d in, appended to
+      <code>tools.lisp</code>, and will be present in every future restart — without recompiling or redeploying.
+    </p>
+    <h3>Code is data</h3>
+    <p>
+      The <code>define-tool</code> macro expands into a <code>setf</code> on a hash table plus an
+      <code>append</code> to a file. Tools are just functions in a table. Adding a tool is as simple as putting
+      a new function in the table. The MCP protocol handler iterates that table to build the schema. There is
+      no registration step, no restart, no yaml.
+    </p>
+    <h3>Live REPL over MCP</h3>
+    <p>
+      The <code>eval_lisp</code> tool gives Claude a full Lisp REPL into the running server. Claude can inspect
+      state, redefine existing functions, query variables, or build new abstractions that persist across sessions.
+      The running server is the development environment.
+    </p>
+    <h3>Why not Python/Node/Go</h3>
+    <ul>
+      <li><strong>Python/Node</strong> — dynamic but no persistent image model. Restarting means reloading everything. Nothing survives the process.</li>
+      <li><strong>Go/Rust</strong> — fast but completely static. No runtime redefinition at all.</li>
+      <li><strong>Java</strong> — hot-swap exists but is fragile and limited. No equivalent to <code>save-lisp-and-die</code>.</li>
+    </ul>
+    <p>
+      Lisp is the only mainstream environment that combines runtime redefinition, persistent compiled images,
+      macro-driven extension, native performance, and full OS access. Octopus is a modern Lisp Machine —
+      embedded, networked, and AI-driven.
+    </p>
+  </div>
+
+  <!-- RETHINK OPS -->
+  <div class="section" id="ops">
+    <h2>Drop Docker. Drop the update cycle. Let AI write the services.</h2>
+
+    <div class="provocation">
+      "What if the answer to the patch treadmill isn't better patch management — it's not having the software that needs patching?"
+    </div>
+
+    <p>
+      Consider what a typical organisation runs: a web server, a database, a cache, a queue, a monitoring stack,
+      maybe a few internal APIs. Each of those is a third-party binary, written by people who have never seen your
+      environment, carrying a dependency tree that extends hundreds of packages deep. Every one of those packages
+      has a CVE history. Every one needs patching. Each patch requires downloading a new binary from the internet,
+      testing it, and rebooting or restarting the service — ideally at 2am to minimise user impact.
+    </p>
+    <p>
+      This is the current state of operations, and it is genuinely insane. Not because the people running it are
+      incompetent, but because the model itself is broken. <strong>The attack surface of modern software is almost
+      entirely composed of code nobody in the organisation wrote, nobody fully understands, and nobody can
+      meaningfully audit.</strong> Security patches are downstream acknowledgements of upstream failures in software
+      that was never designed with your specific environment in mind.
+    </p>
+
+    <h3>What if you wrote your own services instead?</h3>
+    <p>
+      For most organisations, this has historically been laughable — you can't staff a team to write and maintain
+      a web server, a database engine, and a TLS stack. But that assumption was based on the cost of human software
+      development. That cost is collapsing.
+    </p>
+    <p>
+      With an AI that can write, test, deploy, and iterate on software in a live Lisp image, the calculus changes.
+      A Lisp application that serves your specific API doesn't need a generic web framework with 40 middleware
+      layers. A Lisp data store that holds your specific schema doesn't need a general-purpose SQL engine with
+      decades of legacy surface area. The application is exactly as complex as it needs to be — no more.
+    </p>
+
+    <div class="cost-grid">
+      <div class="cost-card">
+        <div class="cost-label">Traditional stack — the real costs</div>
+        <ul>
+          <li>nginx + openssl + libssl dependency chain</li>
+          <li>PostgreSQL with 30 years of legacy code paths</li>
+          <li>Docker daemon, container runtime, image registry</li>
+          <li>Kubernetes control plane (if you went there)</li>
+          <li>CVE alerts, patch windows, reboot cycles</li>
+          <li>IT staff whose job is applying other people's updates</li>
+          <li>Vendor lock-in on software you didn't write and can't fully change</li>
+          <li>Configuration drift between environments</li>
+        </ul>
+      </div>
+      <div class="cost-card future">
+        <div class="cost-label">Octopus model — what changes</div>
+        <ul>
+          <li>HTTP server is 50 lines of Lisp you can read in 5 minutes</li>
+          <li>Data persistence is exactly the schema you need, nothing else</li>
+          <li>No container runtime — the service <em>is</em> the application</li>
+          <li>No package manager — dependencies are compiled into the image</li>
+          <li>Security surface is the kernel + musl + your code</li>
+          <li>Updates are AI-generated patches applied to a live image</li>
+          <li>Full understanding of every line running on the machine</li>
+          <li>Rollback is a Lisp image snapshot</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>The dependency problem is the security problem</h3>
+    <p>
+      Most CVEs are not in your code. They are in code three layers below yours that you pulled in transitively
+      through a dependency you didn't choose to have. The log4j vulnerability didn't affect organisations because
+      they wrote bad Java — it affected them because log4j was somewhere in a stack they couldn't fully enumerate.
+      The XZ utils backdoor almost shipped in half the Linux distributions in the world because it was a dependency
+      nobody was watching closely enough.
+    </p>
+    <p>
+      The answer is not better dependency scanning. The answer is fewer dependencies. A Lisp application written
+      by an AI for a specific purpose carries exactly the dependencies required for that purpose. There is no
+      general-purpose web framework pulling in an XML parser you never use. There is no logging library with a
+      JNDI lookup nobody thought to disable.
+    </p>
+
+    <h3>What this looks like in practice</h3>
+    <p>
+      Imagine describing what you need to an AI: "I need an API that accepts sensor readings from 50 devices,
+      stores the last 30 days of data, and serves a dashboard showing current values and trends." In the current
+      model, that becomes: choose a web framework, choose a database, write glue code, deploy containers, set up
+      monitoring, manage updates. In the Octopus model: Claude writes a Lisp application that does exactly that,
+      deploys it to an Octopus machine, and modifies it in response to your feedback — live, without a reboot.
+    </p>
+    <p>
+      The security properties are different in kind. You know what the application does because you described it
+      and the AI wrote it in front of you. You can read every line. There is no opaque binary from a vendor.
+      There is no update schedule driven by someone else's CVE disclosure process. If a vulnerability is found,
+      the AI patches the specific function, pushes the change to the live image, and the fix is live in seconds.
+    </p>
+
+    <h3>The honest scope of this today</h3>
+    <p>
+      This is not yet a replacement for all enterprise software. Databases handling millions of transactions,
+      web servers under serious DDoS load, cryptographic implementations — these still benefit from decades of
+      hardening in well-maintained open source software. Rewriting OpenSSL in Lisp is not the move.
+    </p>
+    <p>
+      But the vast middle ground of internal tooling, line-of-business applications, dashboards, APIs, data
+      pipelines, monitoring systems — the things that make up the majority of most organisations' operational
+      surface area — are excellent candidates. Straightforward enough for an AI to write correctly, specific
+      enough that a general-purpose tool adds unnecessary complexity, important enough that the current
+      update-and-hope model carries real risk.
+    </p>
+    <p>
+      The model is: <strong>understand exactly what you need, have an AI build exactly that, run it on hardware
+      you control, update it by describing what changed.</strong> The patch treadmill stops because there is no
+      upstream to patch from.
+    </p>
+  </div>
+
+  <!-- BUILD -->
+  <div class="section" id="build">
+    <h2>How it's built</h2>
+    <div class="stack-row"><span class="stack-label">Build system</span><span>Buildroot 2024.11.1 — cross-compilation toolchain, package management, image assembly</span></div>
+    <div class="stack-row"><span class="stack-label">C library</span><span>musl libc — smaller and cleaner than glibc for an appliance</span></div>
+    <div class="stack-row"><span class="stack-label">Kernel</span><span>Linux 6.11.11 — stripped config, x86_64, PCI, E1000E, VirtIO, no DRM/sound/wireless</span></div>
+    <div class="stack-row"><span class="stack-label">Init (stage 1)</span><span>octopus-init — shell script, PID 1, mounts + env + network then execs s6</span></div>
+    <div class="stack-row"><span class="stack-label">Init (stage 2)</span><span>s6-svscan — service supervision, restart on crash, SIGCHLD handling</span></div>
+    <div class="stack-row"><span class="stack-label">Utilities</span><span>busybox — shell, mount, ip, watchdog, and ~200 other tools in ~1MB</span></div>
+    <div class="stack-row"><span class="stack-label">MCP server</span><span>SBCL + hunchentoot + dexador + yason — compiled to a 12MB executable at build time</span></div>
+    <div class="stack-row"><span class="stack-label">Bootloader</span><span>GRUB2 EFI — boots from USB or netboot</span></div>
+    <div class="stack-row"><span class="stack-label">Image size</span><span>~50MB ISO, ~23MB bzImage (kernel + embedded initramfs)</span></div>
+    <h3>Netboot</h3>
+    <pre><code>kernel http://your-server/octo/bzImage-pci ip=dhcp console=tty0 earlyprintk=vga nomodeset panic=5
+# initramfs is embedded — no separate initrd needed</code></pre>
+    <h3>Configuration</h3>
+    <pre><code>HOSTNAME=octopus
+NETWORK_INTERFACE=eth0
+TUNNEL_TOKEN=your-cloudflare-tunnel-token
+SSH_AUTHORIZED_KEYS="ssh-ed25519 AAAA... your-key"
+NTP_SERVERS="0.pool.ntp.org 1.pool.ntp.org"
+MCP_PORT=8765
+MCP_ROOT=/data/projects</code></pre>
+  </div>
+
+  <!-- SAFETY -->
   <div class="section">
-    <h2>Example: defining a tool from inside the image</h2>
-    <pre><code>;; AI grows a new "arm" (tool)
-(defun define-tentacle (name fn &key persist?)
-  (setf (gethash name *tentacles*) fn)
-  (when persist?
-    (snapshot-image))
-  name)
-
-;; Example tool the AI could define
-(define-tentacle "restart-service"
-  (lambda (svc)
-    (shell "systemctl restart ~a" svc))
-  :persist? t)</code></pre>
-  </div>
-
-  <div class="section" id="boot-arch">
-    <h2>Boot and process architecture</h2>
-    <pre><code> ┌──────────────────────────────────────────────────────────────┐
- │                        System Power‑On                       │
- └──────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
- ┌──────────────────────────────────────────────────────────────┐
- │                        Linux Kernel Boots                    │
- │  - initramfs → rootfs                                         │
- │  - PID 1 starts (systemd or similar)                          │
- └──────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
- ┌──────────────────────────────────────────────────────────────┐
- │                     Process Manager Starts                    │
- │  octopus-mcp.service:                                         │
- │    - Wants=network-online.target                              │
- │    - After=network-online.target                              │
- │    - ExecStart=/usr/local/bin/octopus-mcp-wrapper             │
- └──────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
- ┌──────────────────────────────────────────────────────────────┐
- │                 Octopus MCP Wrapper / Supervisor              │
- │  - Opens TCP socket (e.g., 0.0.0.0:3333)                      │
- │  - Accepts incoming connections                               │
- │  - For each connection:                                       │
- │        fork/exec → sbcl --load mcp-server.lisp                │
- │  - STDIN/STDOUT of SBCL are wired to the TCP socket           │
- └──────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
- ┌──────────────────────────────────────────────────────────────┐
- │                   SBCL Starts MCP Server                     │
- │  Command: sbcl --load mcp-server.lisp                         │
- │                                                               │
- │  Inside mcp-server.lisp:                                      │
- │    - Load core Lisp image                                     │
- │    - Initialize tool registry                                 │
- │    - Load persisted snapshot (if present)                     │
- │    - Start MCP protocol loop                                  │
- │    - Handle JSON messages and tool calls                      │
- │    - Allow live redefinition / extension                      │
- └──────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
- ┌──────────────────────────────────────────────────────────────┐
- │                     Live MCP Interaction                     │
- │  - AI connects over TCP                                       │
- │  - Requests schema                                            │
- │  - Calls tools                                                │
- │  - Defines new tools                                          │
- │  - Persists changes to image                                  │
- │  - Octopus evolves                                            │
- └──────────────────────────────────────────────────────────────┘</code></pre>
-  </div>
-
-  <div class="section" id="lisp-power">
-    <h2>Why Lisp is so powerful here</h2>
-
-    <h3>Code is data, and data is code</h3>
+    <h2>Why live Lisp evaluation isn't dangerous here</h2>
     <p>
-      Lisp represents code as native data structures. This enables programmatic function generation, runtime
-      transformation of behaviour, and direct manipulation of tool definitions. Tools in Octopus are not static
-      declarations — they are live functions in a running image that can be created, replaced, or extended at runtime.
+      Historically "self-modifying code" meant programs writing bytes into their own executable memory — the
+      province of malware and 1970s assembly tricks. Octopus does none of that. Lisp's runtime redefinition is
+      a first-class, language-level operation: redefining a function is updating a function cell, the same
+      operation a REPL-driven development workflow has used safely for decades.
     </p>
-
-    <h3>The image model: everything is live</h3>
     <p>
-      A Lisp image is a snapshot of the entire running system: code, data, state, and all. You can mutate the system,
-      snapshot it, and restart from that image later with all definitions intact. This allows Octopus to evolve while
-      running and persist those changes across reboots, something no other mainstream language runtime supports cleanly.
-    </p>
-
-    <h3>The macro system: build new languages on the fly</h3>
-    <p>
-      Macros allow Lisp to extend itself. Octopus can define domain‑specific languages for tools, schemas, protocols,
-      GPU kernels, or audio/video pipelines. These DSLs can be generated at runtime, enabling the AI to create new
-      abstractions that become first‑class citizens in the system.
-    </p>
-
-    <h3>Native performance close to C/C++</h3>
-    <p>
-      SBCL compiles to native code. With type declarations and careful design in hot paths, performance is often within
-      striking distance of C/C++. This means Octopus can handle protocol parsing, GPU dispatch, audio/video streaming,
-      and other systems‑level tasks without sacrificing runtime flexibility.
-    </p>
-
-    <h3>Full Linux, GPU, and multimedia access</h3>
-    <p>
-      SBCL is a native Linux process with full access to system calls and C libraries. This includes CUDA, OpenCL,
-      Vulkan, FFmpeg, GStreamer, ALSA, PulseAudio, JACK, PipeWire, VAAPI, NVENC, and more. Any of these can be wrapped
-      as MCP tools and extended at runtime.
-    </p>
-
-    <h3>Why other languages can’t do this</h3>
-    <p>
-      Most languages force a trade‑off:
-    </p>
-    <ul>
-      <li>Python/Node: dynamic but slow, unsafe, and not persistent.</li>
-      <li>Go/Rust: fast but static — no runtime mutation.</li>
-      <li>Java: hot‑swap exists but is brittle and limited.</li>
-    </ul>
-    <p>
-      Lisp is the only environment that combines:
-    </p>
-    <ul>
-      <li>Runtime redefinition</li>
-      <li>Persistent images</li>
-      <li>Macro‑driven language extension</li>
-      <li>Native performance</li>
-      <li>Full OS and hardware access</li>
-    </ul>
-
-    <h3>Why Lisp makes Octopus possible</h3>
-    <p>
-      Octopus is not just a server — it is a live, evolving system. The AI can define new tools, patch behaviour,
-      create new protocols, or extend the system in ways that persist across restarts. This is only possible because
-      Lisp treats the running system as a living organism rather than a static binary. Octopus is effectively a modern
-      Lisp Machine — embedded, networked, and AI‑driven.
-    </p>
-  </div>
-
-  <!-- NEW SECTION: WHY THIS IS SAFE -->
-  <div class="section" id="safety">
-    <h2>Why this isn’t the “bad” kind of self‑modifying code</h2>
-
-    <p>
-      Historically, “self‑modifying code” meant programs scribbling bytes into their own text segment — a dangerous,
-      opaque, and unmaintainable practice associated with early assembly, malware, and systems without memory
-      protection. Octopus does <strong>none</strong> of that. Instead, it uses the structured, intentional,
-      language‑level redefinition mechanisms that Lisp was designed around. In Lisp, redefining a function, macro, or
-      class at runtime is not a hack; it is a first‑class operation supported by the compiler, the runtime, the object
-      system, and the debugger. The system remains type‑checked, introspectable, and fully observable throughout.
-    </p>
-
-    <h3>Why this is safe in Lisp</h3>
-
-    <p>
-      Lisp’s runtime is built around the idea that code is data and data is code. Functions are objects. Classes are
-      objects. Generic functions, methods, macros, and even the compiler itself are objects. Redefinition is not a
-      mutation of raw memory — it is a controlled update of objects in a well‑defined environment. The runtime updates
-      function cells, method dispatch tables, macro expanders, and class metaobjects in a consistent, atomic way.
-    </p>
-
-    <p>
-      Because the system is fully introspectable, Octopus can:
-    </p>
-
-    <ul>
-      <li>inspect existing definitions before replacing them</li>
-      <li>validate new definitions</li>
-      <li>wrap or sandbox tool functions</li>
-      <li>log and audit changes</li>
-      <li>snapshot the entire image for rollback</li>
-    </ul>
-
-    <p>
-      This is fundamentally different from traditional self‑modifying code. Nothing is being patched at the byte level.
-      Nothing is being rewritten in executable memory. The system is simply replacing objects with new objects — the
-      same way a REPL‑driven development workflow has worked safely for decades.
-    </p>
-
-    <h3>Why this works for an AI‑driven system</h3>
-
-    <p>
-      Because Lisp supports safe, structured redefinition, the AI can extend the system without destabilizing it. New
-      tools are just functions added to a registry. Redefinitions are just updates to function objects. Snapshots
-      preserve the entire state of the system, allowing Octopus to evolve while retaining the ability to roll back or
-      clone itself. This makes Octopus a uniquely safe environment for runtime evolution — something that would be
-      reckless or impossible in most other languages.
-    </p>
-
-    <p>
-      In short: Octopus isn’t doing the dangerous kind of self‑modifying code. It’s using the safe, intentional,
-      language‑level evolution model that Lisp was built for.
-    </p>
-  </div>
-
-  <div class="section" id="gpu-av">
-    <h2>GPU, Audio, and Video Capabilities</h2>
-    <p>
-      SBCL can interact with GPU compute, audio pipelines, and video systems the same way a C program can. This allows
-      Octopus to expose GPU kernels, audio processing chains, or video transcoding pipelines as MCP tools that can be
-      extended at runtime.
-    </p>
-  </div>
-
-  <div class="section" id="arm-hub">
-    <h2>Arm Hub: sharing new “arms” across nodes</h2>
-    <p>
-      Each Octopus node can grow new “arms” — tools, protocols, GPU kernels, audio/video pipelines — inside its live
-      Lisp image. The <strong>Arm Hub</strong> is a central registry where nodes can publish these arms so other
-      nodes can discover and import them.
-    </p>
-
-    <h3>Multi‑node evolution</h3>
-    <pre><code>          ┌───────────────────────────────┐
-          │        Arm Hub (Central)      │
-          │  - Index, validate, version   │
-          │  - Store arm.json + arm.lisp  │
-          └───────────────┬──────────────┘
-                          │
-          ┌───────────────┴──────────────┐
-          │                              │
-┌───────────────────────┐      ┌───────────────────────┐
-│   Octopus Node A       │      │   Octopus Node B       │
-│  (Live Lisp Image)     │      │  (Live Lisp Image)     │
-│                        │      │                        │
-│ 1. AI defines new arm  │      │ 4. Node queries hub    │
-│                        │      │                        │
-│ 2. Node serializes     │      │ 5. Node pulls arm.json │
-│    arm.json + arm.lisp │      │    + arm.lisp          │
-│                        │      │                        │
-│ 3. POST /arms → Hub    │      │ 6. Node loads arm.lisp │
-│                        │      │    into live image     │
-└───────────────────────┘      └───────────────────────┘</code></pre>
-
-    <p>
-      Over time, the Arm Hub becomes a shared library of evolved capabilities: GPU kernels tuned for specific models,
-      audio pipelines for different environments, protocol adapters, monitoring tools, and more. Because everything is
-      expressed as Lisp code plus a small JSON descriptor, arms are easy to inspect, version, diff, and audit.
+      Every tool definition is logged to <code>tools.lisp</code>. The image can be snapshotted. The reasoning
+      behind each eval is visible in the conversation. The audit trail is structural, not bolted on.
     </p>
   </div>
 
 </div>
 
 <footer>
-  Octopus — a Lisp‑native MCP experiment for developers who like live systems.
+  Octopus — built by <a href="https://www.linkedin.com/in/sean-w-b981934/">Sean Watkins</a> with Claude.
+  Written in Common Lisp. Runs on Linux. Supervised by s6. Tunnelled by Cloudflare.
 </footer>
 
 <script>
   const toggle = document.getElementById("themeToggle");
-  const body = document.body;
-
   toggle.addEventListener("click", () => {
-    const current = body.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
-    body.setAttribute("data-theme", next);
+    const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    document.body.setAttribute("data-theme", next);
     toggle.textContent = next === "dark" ? "light mode" : "dark mode";
   });
 </script>
 
 </body>
 </html>
-
