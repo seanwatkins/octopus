@@ -108,6 +108,24 @@
     .cost-card.future .cost-label { color: var(--accent); }
     .cost-card ul { margin: 6px 0 0; padding-left: 16px; }
     .cost-card li { font-size: 0.88rem; color: var(--muted); margin-bottom: 3px; }
+    /* GitHub repo links */
+    .repo-links { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0; }
+    .repo-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px; border-radius: 6px;
+      border: 1px solid var(--accent); color: var(--accent);
+      font-size: 0.85rem; font-weight: 600; transition: background 0.15s;
+    }
+    .repo-link:hover { background: var(--code-bg); text-decoration: none; }
+    .repo-link svg { flex-shrink: 0; }
+    /* Video embed */
+    .video-wrapper {
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+      border-radius: 8px; border: 1px solid var(--border); margin-top: 16px;
+    }
+    .video-wrapper iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+    }
   </style>
 </head>
 
@@ -120,6 +138,7 @@
   </div>
   <div class="nav-links">
     <a href="#what">What it is</a>
+    <a href="#demo">Demo</a>
     <a href="#rethink">Rethink Security</a>
     <a href="#boot">Boot</a>
     <a href="#services">Services</a>
@@ -127,6 +146,7 @@
     <a href="#lisp">Why Lisp</a>
     <a href="#ops">Rethink Ops</a>
     <a href="#build">Build</a>
+    <a href="https://github.com/seanwatkins/octopus" target="_blank" rel="noopener">GitHub</a>
     <button class="toggle-btn" id="themeToggle">light mode</button>
   </div>
 </header>
@@ -141,6 +161,22 @@
     <span class="badge">Buildroot 2024.11</span>
     <span class="badge">~50MB ISO</span>
     <span class="status-built">✓ Built</span>
+  </div>
+
+  <!-- REPOS -->
+  <div class="repo-links">
+    <a class="repo-link" href="https://github.com/seanwatkins/octopus" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38v-1.34C3.73 14.36 3.27 13 3.27 13c-.36-.92-.88-1.17-.88-1.17-.72-.49.05-.48.05-.48.8.06 1.22.82 1.22.82.71 1.21 1.87.86 2.33.66.07-.52.28-.86.5-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.69 7.69 0 018 4.07c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      seanwatkins/octopus
+    </a>
+    <a class="repo-link" href="https://github.com/seanwatkins/mcp_server" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38v-1.34C3.73 14.36 3.27 13 3.27 13c-.36-.92-.88-1.17-.88-1.17-.72-.49.05-.48.05-.48.8.06 1.22.82 1.22.82.71 1.21 1.87.86 2.33.66.07-.52.28-.86.5-1.06-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.69 7.69 0 018 4.07c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      seanwatkins/mcp_server
+    </a>
   </div>
 
   <!-- WHAT IT IS -->
@@ -186,6 +222,23 @@
       inbound ports, no static IP required. The entire infrastructure exists to get out of the way and let
       the Lisp image run.
     </p>
+  </div>
+
+  <!-- DEMO VIDEO -->
+  <div class="section" id="demo">
+    <h2>See it in action</h2>
+    <p>
+      Watch Claude add a new tool to the live Lisp image on the fly — no redeploy, no restart, the tool
+      exists the moment it's defined.
+    </p>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/BWmUd4mbfAY"
+        title="Octopus — adding code on the fly with Claude"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
+    </div>
   </div>
 
   <!-- RETHINK SECURITY — moved here, right after What it is -->
@@ -603,7 +656,9 @@ MCP_ROOT=/data/projects</code></pre>
 
 <footer>
   Octopus — built by <a href="https://www.linkedin.com/in/sean-w-b981934/">Sean Watkins</a> with Claude.
-  Written in Common Lisp. Runs on Linux. Supervised by s6. Tunnelled by Cloudflare.
+  Written in Common Lisp. Runs on Linux. Supervised by s6. Tunnelled by Cloudflare. &nbsp;|&nbsp;
+  <a href="https://github.com/seanwatkins/octopus" target="_blank" rel="noopener">seanwatkins/octopus</a> &nbsp;·&nbsp;
+  <a href="https://github.com/seanwatkins/mcp_server" target="_blank" rel="noopener">seanwatkins/mcp_server</a>
 </footer>
 
 <script>
