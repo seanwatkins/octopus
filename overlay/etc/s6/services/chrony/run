@@ -1,4 +1,5 @@
 #!/bin/sh
+exec 2>/var/log/octopus/chrony.log
 # s6 run script for chrony (NTP)
 set -a
 . /etc/octopus.env

@@ -1,0 +1,9 @@
+# Large build artifacts — not tracked in git
+# Download/build these separately
+rootfs-boot.cpio
+bzImage
+bzImage-pci
+mcp-server
+cloudflared
+*.iso
+*.cpio

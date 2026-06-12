@@ -1,3 +1,4 @@
 #!/bin/sh
+exec 2>/var/log/octopus/sshd.log
 # s6 run script for sshd
 exec /usr/sbin/sshd -D -e -f /etc/ssh/sshd_config

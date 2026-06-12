@@ -1,7 +1,4 @@
 #!/bin/sh
-# s6 run script for mcp-server
-set -a
-. /etc/octopus.env
-set +a
-
+exec 2>/var/log/octopus/mcp-server.log
+[ -f /etc/octopus.env ] && { set -a; . /etc/octopus.env; set +a; }
 exec /usr/local/bin/mcp-server

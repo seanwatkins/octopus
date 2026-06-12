@@ -1,77 +1,181 @@
 #!/bin/sh
-# /usr/local/bin/octopus-init
-# PID 1 — Stage 1 init for Octopus appliance.
-# Mounts filesystems, configures network, writes dynamic configs,
-# then execs s6-svscan which supervises all services.
+# PID 1 stage 2
 
-set -e
-
-# ── Essential mounts ──────────────────────────────────────────────────────────
-mount -t proc     none /proc
-mount -t sysfs    none /sys
-mount -t devtmpfs none /dev
-mount -t tmpfs    none /tmp  -o mode=1777
-mount -t tmpfs    none /run  -o mode=0755
-
+mount -t proc     none /proc    2>/dev/null || true
+mount -t sysfs    none /sys     2>/dev/null || true
+mount -t devtmpfs none /dev     2>/dev/null || true
+mount -t tmpfs    none /tmp  -o mode=1777 2>/dev/null || true
+mount -t tmpfs    none /run  -o mode=0755 2>/dev/null || true
 mkdir -p /dev/pts /dev/shm
-mount -t devpts none /dev/pts
-mount -t tmpfs  none /dev/shm -o mode=1777
+mount -t devpts none /dev/pts        2>/dev/null || true
+mount -t tmpfs  none /dev/shm -o mode=1777 2>/dev/null || true
 
-# ── Load environment ──────────────────────────────────────────────────────────
-if [ -f /etc/octopus.env ]; then
-    set -a
-    . /etc/octopus.env
-    set +a
-fi
+[ -f /etc/octopus.env ] && { set -a; . /etc/octopus.env; set +a; }
 
-# ── Identity ──────────────────────────────────────────────────────────────────
+# Silence kernel messages to console immediately
+echo 1 > /proc/sys/kernel/printk 2>/dev/null || true
+
 hostname "${HOSTNAME:-octopus}"
-
-cat > /etc/hosts <<EOF
+cat > /etc/hosts << HOSTS
 127.0.0.1   localhost ${HOSTNAME:-octopus}
 ::1         localhost
-EOF
+HOSTS
 
-# ── Log directories ───────────────────────────────────────────────────────────
-mkdir -p "${LOG_DIR:-/var/log/octopus}"
-mkdir -p /var/log/octopus/mcp-server
-mkdir -p /var/log/octopus/cloudflared
-mkdir -p /var/log/octopus/sshd
-mkdir -p /var/lib/chrony
-mkdir -p /var/lib/unbound
+mkdir -p /var/log/octopus/mcp-server \
+         /var/log/octopus/cloudflared \
+         /var/log/octopus/sshd \
+         /var/log/octopus/unbound \
+         /var/lib/chrony \
+         /var/lib/unbound \
+         /var/run/dhcpcd \
+         /var/run/sshd \
+         "${MCP_ROOT:-/data/projects}"
 
-# ── Network ───────────────────────────────────────────────────────────────────
-ip link set lo up
+ip link set lo up 2>/dev/null || true
 
-if [ "${NETWORK_MODE:-dhcp}" = "static" ]; then
-    ip addr add "${STATIC_IP}/${STATIC_NETMASK}" dev "${NETWORK_INTERFACE:-eth0}"
-    ip link set "${NETWORK_INTERFACE:-eth0}" up
-    ip route add default via "${STATIC_GATEWAY}"
-    cat > /etc/resolv.conf <<EOF
-nameserver 127.0.0.1
-nameserver ${DNS_UPSTREAM:-1.1.1.1}
-EOF
-else
-    # DHCP is handled by the dhcpcd service — just bring the interface up
-    ip link set "${NETWORK_INTERFACE:-eth0}" up
+# Auto-detect first non-loopback interface if not set in env
+if [ -z "${NETWORK_INTERFACE}" ]; then
+    NETWORK_INTERFACE=$(ip link show 2>/dev/null         | grep "^[0-9]"         | grep -v " lo:"         | head -1         | awk -F': ' '{print $2}'         | awk '{print $1}')
 fi
+[ -z "${NETWORK_INTERFACE}" ] && NETWORK_INTERFACE=eth0
 
-# ── SSH authorized keys ───────────────────────────────────────────────────────
+ip link set "${NETWORK_INTERFACE}" up 2>/dev/null || true
+
 if [ -n "${SSH_AUTHORIZED_KEYS}" ]; then
-    echo "${SSH_AUTHORIZED_KEYS}" > /etc/ssh/authorized_keys
+    mkdir -p /etc/ssh
+    printf '%s\n' "${SSH_AUTHORIZED_KEYS}" > /etc/ssh/authorized_keys
     chmod 600 /etc/ssh/authorized_keys
 fi
 
-# Generate SSH host keys if missing (first boot)
+# Generate SSH host keys in background — ed25519 only (fast)
 if [ ! -f /etc/ssh/ssh_host_ed25519_key ]; then
-    ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" -q
-    ssh-keygen -t rsa     -b 4096 -f /etc/ssh/ssh_host_rsa_key -N "" -q
+    ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N "" -q 2>/dev/null &
 fi
 
-# ── MCP data directory ────────────────────────────────────────────────────────
-mkdir -p "${MCP_ROOT:-/data/projects}"
+# ── Gather hardware info ──────────────────────────────────────────────────────
+CPU_MODEL=$(grep "^model name" /proc/cpuinfo | head -1 | cut -d: -f2 | sed 's/^ *//')
+CPU_LOGICAL=$(grep -c "^processor" /proc/cpuinfo)
+CPU_PHYSICAL=$(grep "^core id" /proc/cpuinfo | sort -u | wc -l)
+[ "$CPU_PHYSICAL" -eq 0 ] && CPU_PHYSICAL=$CPU_LOGICAL
+RAM_KB=$(grep "^MemTotal" /proc/meminfo | awk '{print $2}')
+RAM_GB=$(( RAM_KB / 1024 / 1024 ))
+RAM_MB=$(( RAM_KB / 1024 ))
+[ "$RAM_GB" -gt 0 ] && RAM_DISP="${RAM_GB}GB" || RAM_DISP="${RAM_MB}MB"
 
-# ── Hand off to s6 ───────────────────────────────────────────────────────────
-# This replaces the current process (PID 1).
-# s6-svscan will manage all services and handle SIGCHLD.
-exec s6-svscan /etc/s6/services
+# ── Boot banner ───────────────────────────────────────────────────────────────
+printf '\033[2J\033[H'
+
+GRN='\033[1;32m'; CYN='\033[1;36m'; YLW='\033[1;33m'
+DIM='\033[2m'; RST='\033[0m'
+
+printf "${CYN}"
+cat << 'BANNER'
+        ___
+     .-'   `-.        ~  ~
+    /  o   o  \      ~  ~  ~
+   |     ^     |      ~  ~
+   |   (---)   |    ~~~~~~~~
+    \         /
+     `-------'
+    /|  | |  |\
+   / |  | |  | \
+  /  ' / \ `  \
+ '---'   '---'
+BANNER
+printf "${RST}"
+printf "  ${CYN}Octopus v0.1${RST}  ---  ${DIM}Lisp-native MCP server appliance${RST}\n"
+printf "  ${DIM}kernel $(uname -r)   host ${HOSTNAME:-octopus}${RST}\n\n"
+
+spinner() {
+    local msg="$1" ticks="${2:-4}"
+    local i=0
+    while [ $i -lt $ticks ]; do
+        case $(( i % 4 )) in
+            0) f='|' ;; 1) f='/' ;; 2) f='-' ;; 3) f='\' ;;
+        esac
+        printf "  ${YLW}${f}${RST}  ${msg}\r"
+        sleep 1
+        i=$(( i + 1 ))
+    done
+}
+
+step() { printf "  ${GRN}+${RST}  $1\n"; }
+
+spinner "mounting filesystems..."    2;  step "filesystems mounted"
+spinner "loading environment..."     2;  step "environment loaded"
+spinner "configuring network..."     2;  step "network interface up"
+spinner "generating SSH keys..."     2;  step "SSH keys ready"
+spinner "starting services..."       2;  step "handing to s6"
+
+# Start s6 in background first so dhcpcd can run, then wait for IP
+s6-svscan /etc/s6/services > /var/log/octopus/s6.log 2>&1 &
+S6_PID=$!
+sleep 2
+
+# Now wait for DHCP — check any non-loopback interface (up to 45s)
+IP=""
+i=0
+while [ $i -lt 45 ] && [ -z "$IP" ]; do
+    IP=$(ip -4 addr 2>/dev/null          | grep "inet "          | grep -v " 127\."          | awk '{print $2}' | cut -d/ -f1 | head -1)
+    if [ -z "$IP" ]; then
+        printf "  \033[2mIP          \033[1;33mwaiting for DHCP... ${i}s\033[0m     \r"
+        sleep 1
+    fi
+    i=$(( i + 1 ))
+done
+printf "\r                                                  \r"
+[ -z "$IP" ] && IP="no IP assigned"
+
+printf "\n"
+printf "  ${DIM}${CPU_MODEL}${RST}\n"
+printf "  ${DIM}${CPU_LOGICAL} logical / ${CPU_PHYSICAL} physical cores   ${RAM_DISP} RAM${RST}\n"
+printf "  ${DIM}IP          ${CYN}${IP}${RST}\n"
+printf "  ${DIM}MCP server  port ${MCP_PORT:-8765}${RST}\n"
+printf "  ${DIM}SSH         port 22${RST}\n\n"
+
+# Wait for background SSH key generation before sshd starts
+wait
+
+# Clear screen and show final banner with live spinner
+# (s6 already started during DHCP wait)
+sleep 1
+printf '\033[2J\033[H'
+
+printf "${CYN}"
+cat << 'FINALBANNER'
+        ___
+     .-'   `-.        ~  ~
+    /  o   o  \      ~  ~  ~
+   |     ^     |      ~  ~
+   |   (---)   |    ~~~~~~~~
+    \         /
+     `-------'
+    /|  | |  |\
+   / |  | |  | \
+  /  ' / \ `  \
+ '---'   '---'
+FINALBANNER
+printf "${RST}"
+printf "  ${CYN}Octopus v0.1${RST}  ---  ${DIM}Lisp-native MCP server appliance${RST}\n"
+printf "  ${DIM}kernel $(uname -r)   host ${HOSTNAME:-octopus}${RST}\n\n"
+printf "  ${DIM}${CPU_MODEL}${RST}\n"
+printf "  ${DIM}${CPU_LOGICAL} logical / ${CPU_PHYSICAL} physical cores   ${RAM_DISP} RAM${RST}\n"
+printf "  ${DIM}IP          ${CYN}${IP}${RST}\n"
+printf "  ${DIM}MCP server  port ${MCP_PORT:-8765}${RST}\n"
+printf "  ${DIM}SSH         port 22${RST}\n\n"
+
+# Heartbeat spinner — shows system is alive, exits if s6 dies
+i=0
+while kill -0 $S6_PID 2>/dev/null; do
+    case $(( i % 4 )) in
+        0) f='|' ;; 1) f='/' ;; 2) f='-' ;; 3) f='\' ;;
+    esac
+    UPTIME=$(cat /proc/uptime 2>/dev/null | awk '{printf "%dm %ds", int($1/60), int($1)%60}')
+    printf "  ${GRN}${f}${RST}  ${DIM}running  uptime ${UPTIME}${RST}     \r"
+    sleep 1
+    i=$(( i + 1 ))
+done
+
+# s6 died — panic visible
+printf "\n  ${YLW}!  s6-svscan exited — check /var/log/octopus/s6.log${RST}\n"
+wait $S6_PID

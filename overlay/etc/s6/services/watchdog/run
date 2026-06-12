@@ -1,4 +1,5 @@
 #!/bin/sh
+exec 2>/var/log/octopus/watchdog.log
 # s6 run script for kernel watchdog
 # Kicks /dev/watchdog every 10s. If this process dies the kernel
 # will reboot the machine after the watchdog timeout (usually 60s).

@@ -1,13 +1,21 @@
 #!/bin/sh
-# s6 run script for cloudflared tunnel
+exec 2>/var/log/octopus/cloudflared.log
+[ -f /etc/octopus.env ] && { set -a; . /etc/octopus.env; set +a; }
 
-set -a
-. /etc/octopus.env
-set +a
-
-# Wait for network before starting tunnel
-until ip route | grep -q default; do
-    sleep 1
+# Wait for default route
+i=0
+while ! ip route show | grep -q default && [ $i -lt 30 ]; do
+    sleep 1; i=$((i+1))
 done
 
-exec cloudflared tunnel --no-autoupdate run --token "${TUNNEL_TOKEN}"
+if [ -z "${TUNNEL_TOKEN}" ]; then
+    echo "cloudflared: no TUNNEL_TOKEN set, sleeping"
+    exec sleep 3600
+fi
+
+if [ ! -x /usr/local/bin/cloudflared ]; then
+    echo "cloudflared: binary not found at /usr/local/bin/cloudflared"
+    exec sleep 3600
+fi
+
+exec /usr/local/bin/cloudflared tunnel --no-autoupdate run --token "${TUNNEL_TOKEN}"

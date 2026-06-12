@@ -1,8 +1,14 @@
 #!/bin/sh
-# s6 run script for dhcpcd
+exec 2>/var/log/octopus/dhcpcd.log
 
-set -a
-. /etc/octopus.env
-set +a
+[ -f /etc/octopus.env ] && { set -a; . /etc/octopus.env; set +a; }
 
-exec dhcpcd -B -f /etc/dhcpcd.conf "${NETWORK_INTERFACE:-eth0}"
+# Use detected interface if env not set
+if [ -z "${NETWORK_INTERFACE}" ]; then
+    NETWORK_INTERFACE=$(ip link show 2>/dev/null \
+        | grep "^[0-9]" | grep -v " lo:" | head -1 \
+        | awk -F': ' '{print $2}' | awk '{print $1}')
+fi
+[ -z "${NETWORK_INTERFACE}" ] && NETWORK_INTERFACE=eth0
+
+exec dhcpcd -B -f /etc/dhcpcd.conf "${NETWORK_INTERFACE}"
